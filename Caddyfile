@@ -1,0 +1,53 @@
+0.0.0.0
+fastcgi / 127.0.0.1:9000 php
+on startup php-fpm
+
+log stdout
+errors stdout
+tls off
+gzip
+root src
+# git github.com/getgrav/grav {
+#     then apk update
+#     then apk add php7-simplexml
+#     then bin/grav install
+#     then bin/gpm install admin -y
+#     then sh -c "addgroup web 2> /dev/null"
+#     then sh -c "adduser root web"
+#     then sh -c "adduser nobody web"
+#     then sh -c "chown -R root:web ."
+#     then sh -c "find . -type f | xargs chmod 664"
+#     then sh -c "find ./bin -type f | xargs chmod 775"
+#     then sh -c "find . -type d | xargs chmod 775"
+#     then sh -c "find . -type d | xargs chmod +s"
+# }
+
+# Begin - Security
+# deny all direct access for these folders
+rewrite {
+    r       /(.git|cache|bin|logs|backups|tests)/.*$
+    to  	/403
+}
+# deny running scripts inside core system folders
+rewrite {
+    r       /(system|vendor)/.*\.(txt|xml|md|html|yaml|php|pl|py|cgi|twig|sh|bat)$
+    to  	/403
+}
+# deny running scripts inside user folder
+rewrite {
+    r       /user/.*\.(txt|md|yaml|php|pl|py|cgi|twig|sh|bat)$
+    to  	/403
+}
+# deny access to specific files in the root folder
+rewrite {
+    r       /(LICENSE.txt|composer.lock|composer.json|nginx.conf|web.config|htaccess.txt|\.htaccess)
+    to  	/403
+}
+
+status 403 /403
+## End - Security
+
+# global rewrite should come last.
+rewrite {
+    to  {path} {path}/ /index.php?_url={uri}
+}

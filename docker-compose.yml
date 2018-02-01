@@ -1,0 +1,45 @@
+version: '3.4'
+
+networks:
+  backend:
+   external:
+    name: backend
+
+configs:
+  Caddyfile:
+    external:
+     name: Caddyfile_dev_v3
+
+volumes:
+  www-dev:
+
+services:
+  grav:
+    image: seffyroff/grav-caddy-alpine:latest
+    ports:
+    - target: 2015
+      protocol: tcp
+      published: 2015
+      mode: host
+    networks:
+     - backend
+    volumes:
+     - www-dev:/srv
+     - /etc/localtime:/etc/localtime:ro
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "proxy"
+        traefik.frontend.rule: "Host:caddydev.h3u.org"
+        traefik.port: "2015"
+      placement:
+        constraints:
+          - node.hostname == mastercontrol
+    configs:
+    - source: Caddyfile
+      target: /etc/Caddyfile
+      uid: '1'
+      gid: '1'
+      mode: 0700
+
+
