@@ -7,20 +7,13 @@ errors stdout
 tls off
 gzip
 root src
-# git github.com/getgrav/grav {
-#     then apk update
-#     then apk add php7-simplexml
-#     then bin/grav install
-#     then bin/gpm install admin -y
-#     then sh -c "addgroup web 2> /dev/null"
-#     then sh -c "adduser root web"
-#     then sh -c "adduser nobody web"
-#     then sh -c "chown -R root:web ."
-#     then sh -c "find . -type f | xargs chmod 664"
-#     then sh -c "find ./bin -type f | xargs chmod 775"
-#     then sh -c "find . -type d | xargs chmod 775"
-#     then sh -c "find . -type d | xargs chmod +s"
-# }
+git github.com/getgrav/grav {
+    then composer install --no-dev -o
+    then bin/grav install
+    then bin/gpm selfupgrade -f
+    then bin/gpm install admin -y
+    then chown -R www-data:www-data .
+}
 
 # Begin - Security
 # deny all direct access for these folders
