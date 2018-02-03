@@ -14,12 +14,14 @@ RUN VERSION=${version} PLUGINS=${plugins} /bin/sh /usr/bin/builder.sh
 
 FROM php:fpm-alpine3.7
 
+ARG repo="https://github.com/getgrav/grav.git"
+
 RUN apk upgrade --update && apk add git libpng-dev freetype-dev libjpeg-turbo-dev \
 && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
 && docker-php-ext-configure zip \
 && docker-php-ext-install gd zip
 
-RUN git clone -b master https://github.com/getgrav/grav.git /srv/src && \
+RUN git clone -b master ${repo} /srv/src && \
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
     php -r "unlink('composer-setup.php');" && \
